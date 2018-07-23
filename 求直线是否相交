@@ -1,0 +1,58 @@
+```javascript
+export default class Line {
+    constructor(start, end) {
+        this.start = start;
+        this.end = end;
+    }
+
+    isCollideWith(other) {
+        // convert this to general form of line: Ax+By = C
+        let a1 = this.end.y - this.start.y;
+        let b1 = this.start.x - this.end.x;
+        let c1 = a1 * this.start.x + b1 * this.start.y;
+
+        // convert other to general form of line: Ax+By = C
+        let a2 = other.end.y - other.start.y;
+        let b2 = other.start.x - other.end.x;
+        let c2 = a2 * other.start.x + b2 * other.start.y;
+
+        // 重合
+        if (a1 == a2 && b1 == b2 && c1 == c2) {
+            return true
+        }
+
+        // calculate the intersection point
+        let d = a1 * b2 - a2 * b1;
+
+        // parallel when d is 0
+        if (d === 0) {
+            return false;
+        }
+
+        // solve the interception point at (x, y)
+        let x = (b2 * c1 - b1 * c2) / d;
+        let y = (a1 * c2 - a2 * c1) / d;
+
+        // check if the interception point is on both line segments
+        if ((this.isInBetween(this.start.x, x, this.end.x) || this.isInBetween(this.start.y, y, this.end.y)) &&
+            (this.isInBetween(other.start.x, x, other.end.x) || this.isInBetween(other.start.y, y, other.end.y))) {
+            return true;
+        }
+
+        // be default the given lines is not intersected.
+        return false;
+    }
+
+    isInBetween(a, b, c) {
+        // return false if b is almost equal to a or c.
+        // this is to eliminate some floating point when
+        // two value is equal to each other but different with 0.00000...0001
+        if (Math.abs(a - b) < 0.000001 || Math.abs(b - c) < 0.000001) {
+            return false;
+        }
+
+        // true when b is in between a and c
+        return (a < b && b < c) || (c < b && b < a);
+    }
+}
+```
